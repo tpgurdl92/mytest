@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- typealias와 mappers를 완성하시오 -->
+	<typeAliases>
+		<typeAlias type="global.sesoc.meet.vo.MemberVO" alias="Member"/>
+		<typeAlias type="global.sesoc.meet.vo.RoomVO" alias="Room"/>
+		<typeAlias type="global.sesoc.meet.vo.ReservationVO" alias="Reservation"/>
+	</typeAliases>
+	<mappers>
+		<mapper resource="mapper/mapper.xml" />
+	</mappers>
+	
+	
+</configuration>
