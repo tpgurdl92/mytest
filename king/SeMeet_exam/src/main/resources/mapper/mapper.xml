@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="global.sesoc.meet.dao.MeetDAO">
+<!-- 로그인 -->
+<select id="login" resultType="Member" parameterType="Member">
+	select id, name from members
+	where id = #{id} and password = #{password}
+</select>
+
+<!--  회의실 목록 보기 -->
+<select id="selectRooms" resultType="Room">
+	select num, name from rooms
+	order by num asc
+</select>
+
+<!--  회의실 예약 현황 보기 : Code 완성 -->
+<select id="selectRoomStatuses" resultType="Reservation">
+	select * from Reservations
+</select>
+
+<!--  seq_reservations.nextval  
+	 회의실 예약을 할 때 사용할 
+-->
+<select id="selectNextReservationNum" resultType="int">
+	select seq_reservations.nextval from dual
+</select>
+
+<!-- 예약 시간 중복 검사 하기 
+	A.종료일자 > B.시작일자 AND A.시작일자 < B.종료일자 
+-->
+<select id="isTimeDuplicated" parameterType="Reservation" resultType="Reservation">
+	select num from reservations
+	where startTime &lt; #{endTime}
+	and endTime &gt; #{startTime}
+	and roomNum = #{roomNum}
+</select>
+
+<!--  예약하기 : Code 완성-->
+<insert id="makeReservation" parameterType="Reservation">
+	insert into reservations values(
+		#{num},
+		#{startTime},
+		#{endTime},
+		#{title},
+		#{memberId},
+		#{roomNum}
+	)
+</insert>
+
+<!--  멤버 그룹 추가 : Code 완성-->
+<insert id="addMemberToGroup" parameterType="Reservation">
+	insert into member_groups values(
+		seq_member_groups.nextval,
+		#{num},
+		#{memberId}
+	)
+</insert>
+
+<!--  회원 목록 보기 -->
+<select id="selectMembers" resultType="Member">
+	select id, name from members
+	order by name asc
+</select>
+
+<!--  예약 취소 하기(멤버그룹 삭제) -->
+<delete id="deleteMemberGroup" parameterType="Reservation">
+	delete from member_groups where RESERVATIONNUM = #{num}
+</delete>
+
+<!--  예약 취소 하기(예약 삭제) -->
+<delete id="deleteReservation" parameterType="Reservation">
+	delete from reservations where num = #{num}
+</delete>
+
+<!--  내 회의 목록 보기 : Code 완성 -->
+<select id="selectMyMeetings" parameterType="Member" resultType="Reservation">
+	select res.num, r.name as "roomName", res.startTime, res.endTime, res.title, res.memberId, res.roomNum from reservations res, member_groups mg, rooms r where mg.memberId=#{id} AND res.num = mg.reservationNum AND res.roomNum = r.num 
+</select>
+
+<!--  불참하기 -->
+<delete id="absent" parameterType="Reservation">
+	delete from member_groups where reservationNum = #{num} and memberId = #{memberId}
+</delete>
+
+
+<update id="truncateReservations">
+	delete from reservations
+</update>
+
+<update id="truncateMeberGroups">
+	delete from member_groups
+</update>
+</mapper>
